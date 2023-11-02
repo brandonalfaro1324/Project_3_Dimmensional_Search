@@ -6,11 +6,9 @@
 package bxa220020;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import javax.swing.RowFilter.Entry;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
 import java.util.Iterator;
 
@@ -152,13 +150,38 @@ public class MDS {
 	return 0;
     }
 
+
     /* 
        e. FindMaxPrice(n): given an integer, find items whose description
        contains that number, and return highest price of those items.
        Return 0 if there is no such item.
     */
+    // findMaxPrice() function gets the highest price that contains a specific description
     public int findMaxPrice(int n) {
-	return 0;
+
+        // Return back cost value if found, if not return 0
+        int find_max_success = 0;
+
+        // Get the set of keys to loop trought
+        Iterator<Item> current_index =  HaMap.keySet().iterator();
+
+        // Loop trought keys
+        while(current_index.hasNext()){
+
+            // Assign the keys to "index_key" class
+            Item index_key = current_index.next();
+
+            // Go here if n exist in the TreeMap
+            if(HaMap.get(index_key).contains(n) == true){
+
+                // Check if cost is higher, if so then replace "find_max_success" with new cost
+                if(find_max_success < index_key.cost){
+                    find_max_success = index_key.cost;
+                }
+            }    
+        }
+        // Return Result
+        return find_max_success;
     }
 
     /* 
@@ -181,6 +204,9 @@ public class MDS {
     }
 
 
+    // Helper functions below
+    // --------------------------------------------------------------------------------------------------------------
+    
     // Helper function print_result() to help us see Keys and Values for Tree and Hash Maps
     public void print_result(){
         for(int item : TrMap.keySet()){
