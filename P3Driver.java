@@ -56,114 +56,116 @@ public class P3Driver {
 		List<Integer> name = new LinkedList<>();
 
 
-			// Use label "whileloop" to exit out of while loop
-			whileloop:
+		// Use label "whileloop" to exit out of while loop
+		whileloop:
 
-			// Loop trought the "in" text file until we reached the end or
-			// a specific string breaks away from the while loop
-			while (in.hasNext()) {
-				lineno++;
-				result = 0;
+		// Loop trought the "in" text file until we reached the end or
+		// a specific string breaks away from the while loop
+		while (in.hasNext()) {
+			lineno++;
+			result = 0;
 
-				// Get next string in text file "in" object
-				operation = in.next();
-			
-				// If "#" is ecounter, skip line and get next string
-				if(operation.charAt(0) == '#') {
-					in.nextLine();
-					continue;
-				}
-
-				// Check string and compute the appropriate statement
-				switch (operation) {
-				
-					// Leave while loop
-					case "End":
-					break whileloop;
-
-					// Insert data to "mds" object
-					case "Insert":
-						// Get ID, that being the first num in line
-						id = in.nextInt();
-						
-						// Get price, located next int in same line
-						price = in.nextInt();
-						name.clear();
-						while(true) {
-							int val = in.nextInt();
-							if(val == 0) { 
-								break; 
-							}
-							else { 
-								name.add(val); 
-							}
-						}
-
-						// NOTE: "name" is a LinkList, very intereseting...
-						// Passing in id and price of which are  
-						result = mds.insert(id, price, name);
-					break;
-				
-					// Find if Data exist
-					case "Find":
-						// Get ID to search and send it to "mds" object
-						id = in.nextInt();
-						result = mds.find(id);
-					break;
-			
-					// Delete Entry node
-					case "Delete":
-						// Get ID to search and send it to "mds" object
-						id = in.nextInt();
-						result = mds.delete(id);
-					break;
-				
-					// Find the MinPrice in HasMap
-					case "FindMinPrice":
-						result = mds.findMinPrice(in.nextInt());
-					break;
-
-					// Find the MaxPrice in HashMap
-					case "FindMaxPrice":
-						result = mds.findMaxPrice(in.nextInt());
-					break;
-				
-					// Find Price Range in HashMap
-					case "FindPriceRange":
-						result = mds.findPriceRange(in.nextInt(), in.nextInt(), in.nextInt());
-					break;
-
-					// Remove Names in HashMap
-					case "RemoveNames":
-						id = in.nextInt();
-						name.clear();
-				
-						while(true) {
-							int val = in.nextInt();
-							if(val == 0) { 
-								break; 
-							}
-							else { 
-								name.add(val); 
-							}
-						}
-						result = mds.removeNames(id, name);
-					break;
-					
-					// Unknown Operation, print it out and go to the next line
-					default:
-						System.out.println("Unknown operation: " + operation);
-				}
+			// Get next string in text file "in" object
+			operation = in.next();
 		
-				// Print total price of every price gathered
-				total += result;
-				
-				// If true print out price, result, operation, and lineno
-				if(VERBOSE) { 
-					System.out.println(lineno + "\t" + operation + "\t" + result + "\t" + total); 
-				}
+			// If "#" is ecounter, skip line and get next string
+			if(operation.charAt(0) == '#') {
+				in.nextLine();
+				continue;
 			}
 
+			// Check string and compute the appropriate statement
+			switch (operation) {
+			
+				// Leave while loop
+				case "End":
+				break whileloop;
+
+				// Insert data to "mds" object
+				case "Insert":
+					// Get ID, that being the first num in line
+					id = in.nextInt();
+					
+					// Get price, located next int in same line
+					price = in.nextInt();
+					name.clear();
+					while(true) {
+						int val = in.nextInt();
+						if(val == 0) { 
+							break; 
+						}
+						else { 
+							name.add(val); 
+						}
+					}
+
+					// NOTE: "name" is a LinkList, very intereseting...
+					// Passing in id and price of which are  
+					result = mds.insert(id, price, name);
+				break;
+			
+				// Find if Data exist
+				case "Find":
+					// Get ID to search and send it to "mds" object
+					id = in.nextInt();
+					result = mds.find(id);
+				break;
+		
+				// Delete Entry node
+				case "Delete":
+					// Get ID to search and send it to "mds" object
+					id = in.nextInt();
+					result = mds.delete(id);
+				break;
+			
+				// Find the MinPrice in HasMap
+				case "FindMinPrice":
+					result = mds.findMinPrice(in.nextInt());
+				break;
+
+				// Find the MaxPrice in HashMap
+				case "FindMaxPrice":
+					result = mds.findMaxPrice(in.nextInt());
+				break;
+			
+				// Find Price Range in HashMap
+				case "FindPriceRange":
+					result = mds.findPriceRange(in.nextInt(), in.nextInt(), in.nextInt());
+				break;
+
+				// Remove Names in HashMap
+				case "RemoveNames":
+					id = in.nextInt();
+					name.clear();
+			
+					while(true) {
+						int val = in.nextInt();
+						if(val == 0) { 
+							break; 
+						}
+						else { 
+							name.add(val); 
+						}
+					}
+					result = mds.removeNames(id, name);
+				break;
+				
+				// Unknown Operation, print it out and go to the next line
+				default:
+					System.out.println("Unknown operation: " + operation);
+			}
+	
+			// Print total price of every price gathered
+			total += result;
+			
+			// If true print out price, result, operation, and lineno
+			if(VERBOSE) { 
+				System.out.println(lineno + "\t" + operation + "\t" + result + "\t" + total); 
+			}
+		}
+
+		mds.print_result();
+			
 		// Print total price and time it took to execute this project. FIN
 		System.out.println(total);
 		System.out.println(timer.end());
