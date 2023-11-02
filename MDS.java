@@ -5,13 +5,12 @@
 // Change to your net id
 package bxa220020;
 
+// Importing classes needed for this project
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import java.util.Iterator;
-
 import java.util.List;
 
 
@@ -70,15 +69,8 @@ public class MDS {
         HaMap = new HashMap<>();
     }
 
-
-    /* Public methods of MDS. Do not change their signatures.
-       __________________________________________________________________
-       a. Insert(id,price,list): insert a new item whose description is given
-       in the list.  If an entry with the same id already exists, then its
-       description and price are replaced by the new values, unless list
-       is null or empty, in which case, just the price is updated. 
-       Returns 1 if the item is new, and 0 otherwise.
-    */
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // insert() function can now add in new Objects to TreeMap and HashMap
     public int insert(int id, int price, List<Integer> list) {
 
@@ -122,37 +114,27 @@ public class MDS {
                 HaMap.put(get_item, get_item.TSetDescr);
             }
         }
+        // Return insert success 1 or 0 if fail
         return insert_success;
     }
 
+    //////////////////////////////////////////
 
-    // b. Find(id): return price of item with given id (or 0, if not found).
-    public int find(int id) {
-	    return 0;
-    }
-
-    /* 
-       c. Delete(id): delete item from storage.  Returns the sum of the
-       ints that are in the description of the item deleted,
-       or 0, if such an id did not exist.
-    */
-
-    // delete() deletes Hash and Tree map and returns total descriptors
+    // delete() function deletes Hash and Tree map and returns total descriptors
     public int delete(int id) {
 
-        // Intialize a var for the success of delete()
+        // Intialize a int var for the success of delete()
         int delete_success = 0;
 
-        // If key exist and value is not null, the we will 
+        // If key exist and value is not null, then we will 
         // delete the Key and Value for both Hash and Tree Maps
         if(TrMap.containsKey(id) == true && TrMap.get(id) != null){
 
             // Remove and get Value from TrMap
             Item testing = TrMap.remove(id);
 
-            // From the value form Trmap.remove(), use it to remove from HashMap
+            // From the value returned from Trmap.remove(), use it to remove from HashMap
             HaMap.remove(testing);
-
 
             // We deleted the Hash and Tree Map, but we still have the "Item" object
             // Since we have the "Item" object, we get every descriptor and assign it to "delete_success"
@@ -163,26 +145,34 @@ public class MDS {
                 delete_success += test.next();
             }
         }
-        // Return total or 0
+        // Return total or 0 if fail
 	    return delete_success;
     }
 
-    /* 
-       d. FindMinPrice(n): given an integer, find items whose description
-       contains that number (exact match with one of the ints in the
-       item's description), and return lowest price of those items.
-       Return 0 if there is no such item.
-    */
-    public int findMinPrice(int n) {
-	return 0;
+    //////////////////////////////////////////
+
+    // find(id) function return price of item with given id returns price or 0 if value does not exist
+    public int find(int id) {
+
+        // Intialize int var to collect price
+        int find_success = 0;
+
+        // If value does exist, go here
+        if(TrMap.containsKey(id) == true){
+
+            // Get Item value from Tree Map
+            Item tmp_item = TrMap.get(id);
+
+            // Get cost and assigned it to "find_success"
+            find_success = tmp_item.cost;
+        }
+
+        // Return cost or 0 if fail
+	    return find_success;
     }
 
+    //////////////////////////////////////////
 
-    /* 
-       e. FindMaxPrice(n): given an integer, find items whose description
-       contains that number, and return highest price of those items.
-       Return 0 if there is no such item.
-    */
     // findMaxPrice() function gets the highest price that contains a specific description
     public int findMaxPrice(int n) {
 
@@ -207,9 +197,20 @@ public class MDS {
                 }
             }    
         }
-        // Return Result
+        // Return Result or 0 if fail
         return find_max_success;
     }
+
+    //////////////////////////////////////////
+
+   
+    public int findMinPrice(int n) {
+	    return 0;
+    }
+
+
+
+   
 
     /* 
        f. FindPriceRange(n,low,high): given int n, find the number
