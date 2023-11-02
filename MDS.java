@@ -204,8 +204,41 @@ public class MDS {
     //////////////////////////////////////////
 
    
+    // findMaxPrice() function gets the lowest price that contains a specific description
+    // NOTE: Code here is the same as "findMaxPrice()", only difference is having to stop 
+    // the while loop the moment we find the dirst descriptor, since lowest cost is found.
     public int findMinPrice(int n) {
-	    return 0;
+	    
+
+        // Return back cost value if found, if not return 0
+        int find_max_success = 0;
+
+        // Get the set of keys to loop trought
+        Iterator<Item> current_index =  HaMap.keySet().iterator();
+
+        // Intialize a boolean var, since we will stop the while 
+        // loop the moment we find the first descriptor
+        boolean stop_loop = false;
+
+        // Loop trought keys
+        while(stop_loop == false && current_index.hasNext()){
+
+            // Assign the keys to "index_key" class
+            Item index_key = current_index.next();
+
+            // Go here if n exist in the TreeMap
+            if(HaMap.get(index_key).contains(n) == true){
+
+                // Check if cost is higher, if so then replace "find_max_success" 
+                // with new cost and assign "stop_loop" to true and stop loop
+                if(find_max_success < index_key.cost){
+                    stop_loop = true;
+                    find_max_success = index_key.cost;
+                }
+            }    
+        }
+        // Return Result or 0 if fail
+        return find_max_success;
     }
 
 
