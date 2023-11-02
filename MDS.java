@@ -136,8 +136,35 @@ public class MDS {
        ints that are in the description of the item deleted,
        or 0, if such an id did not exist.
     */
+
+    // delete() deletes Hash and Tree map and returns total descriptors
     public int delete(int id) {
-	return 0;
+
+        // Intialize a var for the success of delete()
+        int delete_success = 0;
+
+        // If key exist and value is not null, the we will 
+        // delete the Key and Value for both Hash and Tree Maps
+        if(TrMap.containsKey(id) == true && TrMap.get(id) != null){
+
+            // Remove and get Value from TrMap
+            Item testing = TrMap.remove(id);
+
+            // From the value form Trmap.remove(), use it to remove from HashMap
+            HaMap.remove(testing);
+
+
+            // We deleted the Hash and Tree Map, but we still have the "Item" object
+            // Since we have the "Item" object, we get every descriptor and assign it to "delete_success"
+            Iterator <Integer> test = testing.TSetDescr.iterator();
+
+            // Loop trought the Tree Set and add every descriptor
+            while(test.hasNext()){
+                delete_success += test.next();
+            }
+        }
+        // Return total or 0
+	    return delete_success;
     }
 
     /* 
@@ -206,7 +233,7 @@ public class MDS {
 
     // Helper functions below
     // --------------------------------------------------------------------------------------------------------------
-    
+
     // Helper function print_result() to help us see Keys and Values for Tree and Hash Maps
     public void print_result(){
         for(int item : TrMap.keySet()){
