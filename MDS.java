@@ -7,6 +7,7 @@ package bxa220020;
 
 // Importing classes needed for this project
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -15,11 +16,11 @@ import java.util.List;
 
 
 // If you want to create additional classes, place them in this file as subclasses of MDS
-
 public class MDS {
 
-    // Item class that holds id, cost, and TreeSet that holds description
-    static class Item{
+    // Item class that holds id, cost, and TreeSet that holds description.
+    // Also adding "Comparable<Item>"" since we are storing Item in a TreeSet
+    class Item implements Comparable<Item>{
         int id = -1;
         int cost = -1;
         TreeSet<Integer> TSetDescr = null;  
@@ -35,6 +36,13 @@ public class MDS {
                 this.TSetDescr.add(element);
             }
         }
+
+        // Since TreeSet needs an integer to compare, we need to 
+        // add in "compareTo(Item)" and return an int
+        public int compareTo(Item item_check) {
+            return ((Integer)this.id).compareTo((Integer)item_check.id);
+        }
+
 
         // Setting new Price
         private void setprice(int new_price){
@@ -61,7 +69,7 @@ public class MDS {
 
     // Intialize TreeMap and HashMap to null
     TreeMap<Integer, Item> TrMap = null;
-    HashMap<Item, TreeSet<Integer>> HaMap = null;
+    HashMap<Integer, TreeSet<Item>> HaMap = null;
 
     // Constructors, allocate TreeMap and HashMap
     public MDS() {
@@ -88,8 +96,9 @@ public class MDS {
 
             // For TrMap, we put in id for key and Item object for value
             TrMap.put(id, new_item);
-            // For HaMap, put in Item object for key and BinaryTree from "Item" for value
-            HaMap.put(new_item, new_item.TSetDescr);
+            
+            // For HaMap, call add_hashmap() function to insert descriptors in the HashMap            
+            add_hashmap(new_item);
 
             // Set "insert_success" to 1
             insert_success = 1;    
@@ -103,16 +112,21 @@ public class MDS {
             if(list == null || list.isEmpty()){
                 get_item.setprice(price);
             }
-
-            // If list is not empty, then get rid of old descriptor and setting new one
+            
+            // If list is not empty, then get rid of old descriptor and set new one
             else{
 
+                // Remove any Item thats assign to its own descriptor in HashMap
+                update_hashmap(get_item, list);
+
+                // Change Price and List
                 get_item.setprice(price);
                 get_item.setlist(list);
 
-                // Assign new Binary Tree to Hash Map
-                HaMap.put(get_item, get_item.TSetDescr);
+                // With new list in place, add new Descriptors in HashMap
+                add_hashmap(get_item);
             }
+            
         }
         // Return insert success 1 or 0 if fail
         return insert_success;
@@ -125,7 +139,7 @@ public class MDS {
 
         // Intialize a int var for the success of delete()
         int delete_success = 0;
-
+        /*
         // If key exist and value is not null, then we will 
         // delete the Key and Value for both Hash and Tree Maps
         if(TrMap.containsKey(id) == true && TrMap.get(id) != null){
@@ -145,7 +159,8 @@ public class MDS {
                 delete_success += test.next();
             }
         }
-        // Return total or 0 if fail
+        // Return total or 0 if fail 
+         */
 	    return delete_success;
     }
 
@@ -156,7 +171,7 @@ public class MDS {
 
         // Intialize int var to collect price
         int find_success = 0;
-
+        /*
         // If value does exist, go here
         if(TrMap.containsKey(id) == true){
 
@@ -166,7 +181,7 @@ public class MDS {
             // Get cost and assigned it to "find_success"
             find_success = tmp_item.cost;
         }
-
+         */
         // Return cost or 0 if fail
 	    return find_success;
     }
@@ -178,7 +193,7 @@ public class MDS {
 
         // Return back cost value if found, if not return 0
         int find_max_success = 0;
-
+        /*
         // Get the set of keys to loop trought
         Iterator<Item> current_index =  HaMap.keySet().iterator();
 
@@ -197,6 +212,7 @@ public class MDS {
                 }
             }    
         }
+         */
         // Return Result or 0 if fail
         return find_max_success;
     }
@@ -209,10 +225,10 @@ public class MDS {
     // the while loop the moment we find the dirst descriptor, since lowest cost is found.
     public int findMinPrice(int n) {
 	    
-
         // Return back cost value if found, if not return 0
         int find_max_success = 0;
 
+        /*
         // Get the set of keys to loop trought
         Iterator<Item> current_index =  HaMap.keySet().iterator();
 
@@ -237,13 +253,13 @@ public class MDS {
                 }
             }    
         }
+         */
         // Return Result or 0 if fail
         return find_max_success;
     }
 
+    //////////////////////////////////////////
 
-
-   
 
     /* 
        f. FindPriceRange(n,low,high): given int n, find the number
@@ -251,7 +267,7 @@ public class MDS {
        their prices fall within the given range, [low, high].
     */
     public int findPriceRange(int n, int low, int high) {
-	return 0;
+    	return 0;
     }
 
     /*
@@ -260,29 +276,110 @@ public class MDS {
       id's description.  Return the sum of the numbers that are actually
       deleted from the description of id.  Return 0 if there is no such id.
     */
-    public int removeNames(int id, java.util.List<Integer> list) {
-	return 0;
+    public int removeNames(int id, List<Integer> list) {
+        int total = 0;
+	    return total;
     }
 
 
-    // Helper functions below
+    // HELPER FUNCTIONS
+    // --------------------------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 
-    // Helper function print_result() to help us see Keys and Values for Tree and Hash Maps
+    // Helper function print_result() will print HashMap and TreeMap help us see Keys and Values
     public void print_result(){
-        for(int item : TrMap.keySet()){
+        System.out.println("PRINTING HASHMAP... ");         
+
+        // Get keys for HaMap
+        for(int item : HaMap.keySet()){
         
-            System.out.println("TreeMap ID: " + item);
-            TrMap.get(item).printdata();
+            // Print current descriptor from keySet
+            System.out.println("TreeMap Descriptor: " + item);
 
-            System.out.println(HaMap.get(TrMap.get(item)));
+            // There could be multiple nodes in TreeSet in HashMap value
+            // so assign HashMap current value to Iterator
+            Iterator<Item> testing = HaMap.get(item).iterator();
 
-            if(HaMap.get(TrMap.get(item)) == TrMap.get(item).TSetDescr){
-                System.out.println("BOTH TreeMap.Item.BSTree and HashMap.Value are Equal...\n");
+            // Print out the Item in current Treeset
+            while(testing.hasNext()){
+                Item tet = testing.next();
+                tet.printdata();
+            }
+            // Print newline for next TreeSet
+            System.out.println();
+        }
+        // Print end of HashMap
+        System.out.println("END OF HASHMAP...\n\n");         
+    
+        // Now begin TreeMap
+        System.out.println("NOW PRINTING TREEMAP...");     
+
+        for(int i : TrMap.keySet()){
+            TrMap.get(i).printdata();
+        }
+        // Print end of HashMap
+        System.out.println("\nEND OF TREEMAP...\n");         
+    }
+
+     // ----------------------
+
+    // add_hashmap() adds Items to a TreeSet<Item> in HashMap
+    // correlating with Descriptor - key, TreeSet<Item> - value
+    private void add_hashmap(Item adding_item){
+
+        // Loop trought descriptors from newly added Item
+        for(int descriptor : adding_item.TSetDescr){
+
+            // Getting TreeSet<Item> from HaMap base on descriptor
+            TreeSet<Item> tmp = HaMap.get(descriptor);
+
+            // If the TreeSet is not null, add Item to
+            // TreeSet<Item> thats stored in HashMap
+            if(tmp != null){
+                tmp.add(adding_item);
+            }
+
+            // If it is null, allocate a new TreeSet and add Item and
+            // place it in HaMap with descriptor being the key.
+            else{
+                tmp = new TreeSet<>();
+                tmp.add(adding_item);
+                HaMap.put(descriptor, tmp);
             }
         }
     }
 
+     // ----------------------
 
+    /* update_hasmap() removes Items base on their own descriptors,
+    *  since that Item is either being removed or its list is changed
+    *
+    *  If removed, than we need to remove every Item in any descriptor
+    *  that holds that Item
+    *
+    *  If list is being updated, we would need to remove Item from
+    *  any descriptor since their own descriptor is going to be updated*/
+
+    private void update_hashmap(Item tmp_item,List list){
+
+        // Get descriptor from Item TreeSet<Integer>
+        for (int descriptor : tmp_item.TSetDescr){
+
+            // Using desriptor, check if HashMap carries value exist
+
+            // If HashMap is not null and its size if greater than 1, then only
+            // remove Item from the TreeSet<Item>
+            if(HaMap.get(descriptor) != null && HaMap.get(descriptor).size() > 1){
+                HaMap.get(descriptor).remove(tmp_item);
+            }
+
+            // If size is == 1, then only remove the HashMap value
+            else if (HaMap.get(descriptor) != null && HaMap.get(descriptor).size() == 1){
+                HaMap.remove(descriptor);
+            }
+        }
+    }
+    // --------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------------
 }
 
