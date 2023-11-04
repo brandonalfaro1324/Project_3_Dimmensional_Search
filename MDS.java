@@ -7,10 +7,10 @@ package bxa220020;
 
 // Importing classes needed for this project
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.TreeMap;
+
 import java.util.TreeSet;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,7 +117,7 @@ public class MDS {
             else{
 
                 // Remove any Item thats assign to its own descriptor in HashMap
-                update_hashmap(get_item, list);
+                update_hashmap(get_item);
 
                 // Change Price and List
                 get_item.setprice(price);
@@ -139,28 +139,29 @@ public class MDS {
 
         // Intialize a int var for the success of delete()
         int delete_success = 0;
-        /*
+        
+        
         // If key exist and value is not null, then we will 
         // delete the Key and Value for both Hash and Tree Maps
         if(TrMap.containsKey(id) == true && TrMap.get(id) != null){
 
-            // Remove and get Value from TrMap
-            Item testing = TrMap.remove(id);
+            // Remove and get Item from TrMap
+            Item item = TrMap.remove(id);
 
-            // From the value returned from Trmap.remove(), use it to remove from HashMap
-            HaMap.remove(testing);
+            // Remove every node that is in every Descriptor in HashMap
+            update_hashmap(item);
 
             // We deleted the Hash and Tree Map, but we still have the "Item" object
             // Since we have the "Item" object, we get every descriptor and assign it to "delete_success"
-            Iterator <Integer> test = testing.TSetDescr.iterator();
+            Iterator <Integer> test = item.TSetDescr.iterator();
 
             // Loop trought the Tree Set and add every descriptor
             while(test.hasNext()){
                 delete_success += test.next();
             }
         }
+        
         // Return total or 0 if fail 
-         */
 	    return delete_success;
     }
 
@@ -360,7 +361,7 @@ public class MDS {
     *  If list is being updated, we would need to remove Item from
     *  any descriptor since their own descriptor is going to be updated*/
 
-    private void update_hashmap(Item tmp_item,List list){
+    private void update_hashmap(Item tmp_item){
 
         // Get descriptor from Item TreeSet<Integer>
         for (int descriptor : tmp_item.TSetDescr){
