@@ -140,7 +140,6 @@ public class MDS {
         // Intialize a int var for the success of delete()
         int delete_success = 0;
         
-        
         // If key exist and value is not null, then we will 
         // delete the Key and Value for both Hash and Tree Maps
         if(TrMap.containsKey(id) == true && TrMap.get(id) != null){
@@ -160,7 +159,6 @@ public class MDS {
                 delete_success += test.next();
             }
         }
-        
         // Return total or 0 if fail 
 	    return delete_success;
     }
@@ -172,7 +170,7 @@ public class MDS {
 
         // Intialize int var to collect price
         int find_success = 0;
-        /*
+        
         // If value does exist, go here
         if(TrMap.containsKey(id) == true){
 
@@ -182,7 +180,6 @@ public class MDS {
             // Get cost and assigned it to "find_success"
             find_success = tmp_item.cost;
         }
-         */
         // Return cost or 0 if fail
 	    return find_success;
     }
@@ -194,26 +191,19 @@ public class MDS {
 
         // Return back cost value if found, if not return 0
         int find_max_success = 0;
-        /*
-        // Get the set of keys to loop trought
-        Iterator<Item> current_index =  HaMap.keySet().iterator();
+        
+        // Get value from n as the key in HashMap, loop trought the TreeSet and find the higest price
+        TreeSet<Item> tmp_item = HaMap.get(n);
 
-        // Loop trought keys
-        while(current_index.hasNext()){
+        if(tmp_item != null){
+            for (Item item : tmp_item){   
 
-            // Assign the keys to "index_key" class
-            Item index_key = current_index.next();
-
-            // Go here if n exist in the TreeMap
-            if(HaMap.get(index_key).contains(n) == true){
-
-                // Check if cost is higher, if so then replace "find_max_success" with new cost
-                if(find_max_success < index_key.cost){
-                    find_max_success = index_key.cost;
+                // If cost is higher, replace find_max_success with cost
+                if(find_max_success < item.cost){
+                    find_max_success = item.cost;
                 }
-            }    
+            }
         }
-         */
         // Return Result or 0 if fail
         return find_max_success;
     }
@@ -229,32 +219,27 @@ public class MDS {
         // Return back cost value if found, if not return 0
         int find_max_success = 0;
 
-        /*
+        
         // Get the set of keys to loop trought
-        Iterator<Item> current_index =  HaMap.keySet().iterator();
+        Iterator<Item> current_index =  HaMap.get(n).iterator();
 
         // Intialize a boolean var, since we will stop the while 
         // loop the moment we find the first descriptor
         boolean stop_loop = false;
 
         // Loop trought keys
-        while(stop_loop == false && current_index.hasNext()){
+        while (stop_loop == false && current_index.hasNext()){
 
             // Assign the keys to "index_key" class
             Item index_key = current_index.next();
 
-            // Go here if n exist in the TreeMap
-            if(HaMap.get(index_key).contains(n) == true){
-
-                // Check if cost is higher, if so then replace "find_max_success" 
-                // with new cost and assign "stop_loop" to true and stop loop
-                if(find_max_success < index_key.cost){
-                    stop_loop = true;
-                    find_max_success = index_key.cost;
-                }
+            // Check if cost is higher, if so then replace "find_max_success" 
+            // with new cost and assign "stop_loop" to true and stop loop
+            if(find_max_success < index_key.cost){
+                stop_loop = true;
+                find_max_success = index_key.cost;
             }    
         }
-         */
         // Return Result or 0 if fail
         return find_max_success;
     }
