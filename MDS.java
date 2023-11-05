@@ -12,8 +12,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-
 
 // If you want to create additional classes, place them in this file as subclasses of MDS
 public class MDS {
@@ -23,18 +23,16 @@ public class MDS {
     class Item implements Comparable<Item>{
         int id = -1;
         int cost = -1;
+        
+        // ---------- NEW ----------
+        LinkedList<Integer> Duplicates = null;
         TreeSet<Integer> TSetDescr = null;  
 
         // Entry Constructor
         Item(int id, int cost, List<Integer> new_list){
             this.id = id;
-            this.cost = cost;   
-            this.TSetDescr = new TreeSet<>();
-
-            // For TreeSet, add every description from List
-            for(int element : new_list){
-                this.TSetDescr.add(element);
-            }
+            this.cost = cost;
+            setlist(new_list);
         }
 
         // Since TreeSet needs an integer to compare, we need to 
@@ -42,7 +40,6 @@ public class MDS {
         public int compareTo(Item item_check) {
             return ((Integer)this.id).compareTo((Integer)item_check.id);
         }
-
 
         // Setting new Price
         private void setprice(int new_price){
@@ -52,11 +49,16 @@ public class MDS {
         // Setting new List by setting variable to null then allocating a new one
         private void setlist(List<Integer> new_list){
             this.TSetDescr = null;
+            this.Duplicates = null;
+
+            this.Duplicates = new LinkedList<>();
             this.TSetDescr = new TreeSet<>();
 
             // For TreeSet, add every description from List
             for(int element : new_list){
-                this.TSetDescr.add(element);
+                if(this.TSetDescr.add(element) == false){
+                    this.Duplicates.add(element);
+                }
             }
         }
 
@@ -126,9 +128,9 @@ public class MDS {
                 // With new list in place, add new Descriptors in HashMap
                 add_hashmap(get_item);
             }
-            
         }
         // Return insert success 1 or 0 if fail
+
         return insert_success;
     }
 
@@ -157,6 +159,14 @@ public class MDS {
             // Loop trought the Tree Set and add every descriptor
             while(test.hasNext()){
                 delete_success += test.next();
+                //System.out.println(delete_success);
+            }
+
+            // Since ID is getting deleted, we need collect any duplicates stored in Item
+            if(item.Duplicates != null){
+                for(int i : item.Duplicates){
+                    delete_success += i;
+                }  
             }
         }
         // Return total or 0 if fail 
@@ -207,7 +217,7 @@ public class MDS {
         // Return Result or 0 if fail
         return find_max_success;
     }
-
+ 
     //////////////////////////////////////////
 
    
@@ -219,59 +229,78 @@ public class MDS {
         // Return back cost value if found, if not return 0
         int find_max_success = 0;
 
-        
         // Get the set of keys to loop trought
         Iterator<Item> current_index =  HaMap.get(n).iterator();
 
         // Intialize a boolean var, since we will stop the while 
         // loop the moment we find the first descriptor
-        boolean stop_loop = false;
 
         // Loop trought keys
-        while (stop_loop == false && current_index.hasNext()){
+        while (current_index.hasNext()){
 
             // Assign the keys to "index_key" class
             Item index_key = current_index.next();
 
+            if(find_max_success == 0){
+                find_max_success = index_key.cost;
+            }
+
             // Check if cost is higher, if so then replace "find_max_success" 
             // with new cost and assign "stop_loop" to true and stop loop
-            if(find_max_success < index_key.cost){
-                stop_loop = true;
+            if(find_max_success > index_key.cost){
                 find_max_success = index_key.cost;
             }    
         }
+
         // Return Result or 0 if fail
         return find_max_success;
     }
 
     //////////////////////////////////////////
 
-
-    /* 
-       f. FindPriceRange(n,low,high): given int n, find the number
-       of items whose description contains n, and in addition,
-       their prices fall within the given range, [low, high].
-    */
+    // findPriceRange() Finds the number of costs whos descriptors is
+    // withing the Item, cost must be beetween low and high
     public int findPriceRange(int n, int low, int high) {
-    	return 0;
+
+        // Initialize find price success variable
+        int find_price_success = 0;
+
+        // Using HashMap, locate the descriptor and all its TreeSets
+        for (Item i : HaMap.get(n)){
+
+            // Check if Item.cost is between low and hight and increase by 1
+            if(low <= i.cost && i.cost <= high){
+                find_price_success++;
+            }
+        }    
+
+        // Return result
+        return find_price_success;
     }
 
-    /*
-      g. RemoveNames(id, list): Remove elements of list from the description of id.
-      It is possible that some of the items in the list are not in the
-      id's description.  Return the sum of the numbers that are actually
-      deleted from the description of id.  Return 0 if there is no such id.
-    */
+    //////////////////////////////////////////
+
+    // removeNames() Changes removes an Items descriptor
     public int removeNames(int id, List<Integer> list) {
-        int total = 0;
-	    return total;
+       
+        // Initialize remove success variable
+        int remove_name_success = 0;
+
+        // If Item exist, continue and call in del_specific_descriptor()
+        if(TrMap.containsKey(id) == true){
+            remove_name_success = del_specific_descriptor(TrMap.get(id), list);
+        }
+
+        return remove_name_success;
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
     // HELPER FUNCTIONS
     // --------------------------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
-
     // Helper function print_result() will print HashMap and TreeMap help us see Keys and Values
     public void print_result(){
         System.out.println("PRINTING HASHMAP... ");         
@@ -335,7 +364,7 @@ public class MDS {
         }
     }
 
-     // ----------------------
+    // ----------------------
 
     /* update_hasmap() removes Items base on their own descriptors,
     *  since that Item is either being removed or its list is changed
@@ -365,7 +394,39 @@ public class MDS {
             }
         }
     }
+
+    // ----------------------
+
+    // del_specific_descriptor() Removes the Items Descriptor and updates the HashMap
+    private int del_specific_descriptor(Item item, List<Integer> list){
+
+        // Initialize a variable that adds descriptors that were deleted
+        int total_remove = 0;
+        
+        // Looping trough the List
+        for(int i : list){
+
+            // Go here if the Item's SetTree contanins a descriptor that is to be deleted
+            if (item.TSetDescr.contains(i) == true){
+
+                // First, check if HashMap contains that Descriptor, if so
+                // get it and delete it if HashMap TreeSet size bigger than 1
+                if(HaMap.get(i) != null && HaMap.get(i).size() > 1){
+                    HaMap.get(i).remove(item);
+                }
+
+                // If Size is 1, delete Entry
+                else if (HaMap.get(i) != null && HaMap.get(i).size() == 1){
+                HaMap.remove(i);
+                }
+
+                // Increment "total_remove" by i, i being the descriptor int
+                total_remove += i;
+            }
+        }
+        // Return result
+        return total_remove;
+    }
     // --------------------------------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------------------------------
 }
-
