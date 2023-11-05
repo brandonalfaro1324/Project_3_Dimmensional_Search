@@ -164,8 +164,8 @@ public class P3Driver {
 			}
 		}
 
-		mds.print_result();
-			
+		// mds.print_result();
+
 		// Print total price and time it took to execute this project. FIN
 		System.out.println(total);
 		System.out.println(timer.end());
