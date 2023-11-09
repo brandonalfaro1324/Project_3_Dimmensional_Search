@@ -1,6 +1,4 @@
-/** Starter code for P3
- *  @author
- */
+/** @author Brandon Alfaro */
 
 // Change to your net id
 package bxa220020;
@@ -10,9 +8,9 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import java.util.TreeSet;
-
+ 
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 // If you want to create additional classes, place them in this file as subclasses of MDS
@@ -20,13 +18,10 @@ public class MDS {
 
     // Item class that holds id, cost, and TreeSet that holds description.
     // Also adding "Comparable<Item>"" since we are storing Item in a TreeSet
-    class Item implements Comparable<Item>{
+    public class Item implements Comparable<Item>{
         int id = -1;
-        int cost = -1;
-        
-        // ---------- NEW ----------
-        LinkedList<Integer> Duplicates = null;
-        TreeSet<Integer> TSetDescr = null;  
+        int cost = -1;        
+        List<Integer> descriptor = null;
 
         // Entry Constructor
         Item(int id, int cost, List<Integer> new_list){
@@ -35,37 +30,27 @@ public class MDS {
             setlist(new_list);
         }
 
-        // Since TreeSet needs an integer to compare, we need to 
-        // add in "compareTo(Item)" and return an int
-        public int compareTo(Item item_check) {
-            return ((Integer)this.id).compareTo((Integer)item_check.id);
-        }
-
         // Setting new Price
         private void setprice(int new_price){
             this.cost = new_price;
         }
 
-        // Setting new List by setting variable to null then allocating a new one
+        // Allocating List to hold list
         private void setlist(List<Integer> new_list){
-            this.TSetDescr = null;
-            this.Duplicates = null;
-
-            this.Duplicates = new LinkedList<>();
-            this.TSetDescr = new TreeSet<>();
-
-            // For TreeSet, add every description from List
-            for(int element : new_list){
-                if(this.TSetDescr.add(element) == false){
-                    this.Duplicates.add(element);
-                }
-            }
+            this.descriptor = null;
+            this.descriptor = new ArrayList<>(new_list);
         }
 
         // printdata() function is a tool to see what variables "Item" holds
         public void printdata(){
-            System.out.println("ID:" + this.id + " | COST: " + this.cost + " | DESCRIPTION: " + this.TSetDescr);
+            System.out.println("ID:" + this.id + " | COST: " + this.cost + " | DESCRIPTION: " + this.descriptor);
 
+        }
+        
+        // Since TreeSet needs an integer to compare, we need to 
+        // add in "compareTo(Item)" and return an int
+        public int compareTo(Item item_check) {
+            return ((Integer)this.id).compareTo((Integer)item_check.id);
         }
     }
 
@@ -75,8 +60,8 @@ public class MDS {
 
     // Constructors, allocate TreeMap and HashMap
     public MDS() {
-        TrMap = new TreeMap<>();
-        HaMap = new HashMap<>();
+        this.TrMap = new TreeMap<>();
+        this.HaMap = new HashMap<>();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,37 +125,30 @@ public class MDS {
     public int delete(int id) {
 
         // Intialize a int var for the success of delete()
-        int delete_success = 0;
-        
-        // If key exist and value is not null, then we will 
-        // delete the Key and Value for both Hash and Tree Maps
-        if(TrMap.containsKey(id) == true && TrMap.get(id) != null){
+        int delete_total = 0;        
 
-            // Remove and get Item from TrMap
-            Item item = TrMap.remove(id);
+        // Remove and get Item from TrMap
+        Item item = TrMap.remove(id);
 
-            // Remove every node that is in every Descriptor in HashMap
-            update_hashmap(item);
+            // If Item exist, then we will delete 
+            // value for both Hash and Tree Maps
+            if(item != null) {
 
-            // We deleted the Hash and Tree Map, but we still have the "Item" object
-            // Since we have the "Item" object, we get every descriptor and assign it to "delete_success"
-            Iterator <Integer> test = item.TSetDescr.iterator();
+                // Remove every node in HashMap that carries a Descriptor Node
+                update_hashmap(item);
 
-            // Loop trought the Tree Set and add every descriptor
-            while(test.hasNext()){
-                delete_success += test.next();
-                //System.out.println(delete_success);
+                // We deleted the Hash and Tree Map, but we still have the "Item" object
+                // Since we have the "Item" object, we get every descriptor and assign it to "delete_success"
+
+                // Loop trought the Tree Set and add every descriptor
+                List<Integer> tmp_list = item.descriptor;
+                for(int i : tmp_list){
+                    delete_total += i;
+                }
             }
 
-            // Since ID is getting deleted, we need collect any duplicates stored in Item
-            if(item.Duplicates != null){
-                for(int i : item.Duplicates){
-                    delete_success += i;
-                }  
-            }
-        }
         // Return total or 0 if fail 
-	    return delete_success;
+	    return delete_total;
     }
 
     //////////////////////////////////////////
@@ -343,20 +321,18 @@ public class MDS {
     private void add_hashmap(Item adding_item){
 
         // Loop trought descriptors from newly added Item
-        for(int descriptor : adding_item.TSetDescr){
-
+        for (int descriptor : adding_item.descriptor ){
             // Getting TreeSet<Item> from HaMap base on descriptor
             TreeSet<Item> tmp = HaMap.get(descriptor);
 
             // If the TreeSet is not null, add Item to
             // TreeSet<Item> thats stored in HashMap
-            if(tmp != null){
+            if(tmp != null && tmp.contains(adding_item) == false){
                 tmp.add(adding_item);
             }
-
             // If it is null, allocate a new TreeSet and add Item and
             // place it in HaMap with descriptor being the key.
-            else{
+            else if (tmp == null){
                 tmp = new TreeSet<>();
                 tmp.add(adding_item);
                 HaMap.put(descriptor, tmp);
@@ -378,7 +354,7 @@ public class MDS {
     private void update_hashmap(Item tmp_item){
 
         // Get descriptor from Item TreeSet<Integer>
-        for (int descriptor : tmp_item.TSetDescr){
+        for (int descriptor : tmp_item.descriptor){
 
             // Using desriptor, check if HashMap carries value exist
 
@@ -407,7 +383,7 @@ public class MDS {
         for(int i : list){
 
             // Go here if the Item's SetTree contanins a descriptor that is to be deleted
-            if (item.TSetDescr.contains(i) == true){
+            if (item.descriptor.contains(i) == true){
 
                 // First, check if HashMap contains that Descriptor, if so
                 // get it and delete it if HashMap TreeSet size bigger than 1
